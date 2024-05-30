@@ -1,0 +1,59 @@
+{
+  "template": "TWM/cert-03.png",
+  "images": [
+    {
+      "image": "TWM/logo1.png",
+      "x": 675,
+      "y": 50,
+      "width": 400,
+      "height": 400
+    },
+    {
+      "image": "TWM/sign1.png",
+      "x": 1160,
+      "y": 2020,
+      "width": 300,
+      "height": 200
+    }
+  ],
+  "texts": [
+    {
+      "text": "recipientName",
+      "font": "Bold",
+      "fontsize": 120,
+      "x": 875,
+      "y": 920,
+      "align": "center",
+      "color": "grey"
+    },
+    {
+      "text": "courseName",
+      "font": "Bold",
+      "fontsize": 100,
+      "x": 875,
+      "y": 1350,
+      "align": "center",
+      "color": "grey"
+    },
+    {
+      "text": "issueDate",
+      "dateformat": { "format": "DD MMMM BBBB", "locale": "th" },
+      "font": "Normal",
+      "fontsize": 80,
+      "x": 820,
+      "y": 1680,
+      "align": "left"
+    },
+    {
+      "text": "expireDate",
+      "dateformat": { "format": "DD MMMM BBBB", "locale": "th" },
+      "digits": "THAI",
+      "font": "Normal",
+      "fontsize": 60,
+      "x": 870,
+      "y": 1490,
+      "align": "left",
+      "color": "#810000"
+    }
+  ]
+}

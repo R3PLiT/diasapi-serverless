@@ -1,0 +1,46 @@
+{
+  "template": "cert-01.png",
+  "images": [
+    {
+      "image": "logo.png",
+      "x": 200,
+      "y": 100,
+      "width": 750,
+      "height": 750
+    },
+    {
+      "image": "sign.png",
+      "x": 2600,
+      "y": 1800,
+      "width": 300,
+      "height": 200
+    }
+  ],
+  "texts": [
+    {
+      "text": "recipientName",
+      "font": "Bold",
+      "fontsize": 150,
+      "x": 1750,
+      "y": 1125,
+      "align": "center"
+    },
+    {
+      "text": "course",
+      "font": "Bold",
+      "fontsize": 120,
+      "x": 1750,
+      "y": 1525,
+      "align": "center"
+    },
+    {
+      "text": "issueDate",
+      "dateformat": { "format": "DD MMMM BBBB", "locale": "th" },
+      "font": "Normal",
+      "fontsize": 100,
+      "x": 685,
+      "y": 2000,
+      "align": "center"
+    }
+  ]
+}
