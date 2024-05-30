@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import customDate from "../utils/formatDate.js";
+import {customDate} from "../utils/allUtils.js";
 
 const isValidObjectId = mongoose.Types.ObjectId.isValid;
 

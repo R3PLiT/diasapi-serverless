@@ -3,7 +3,6 @@ import "dotenv/config";
 import createError from "http-errors";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
 import mongoose from "mongoose";
 import { randomUUID } from "crypto";
 import {
@@ -13,7 +12,7 @@ import {
   Graduate,
   CertificateTree,
   Certificate,
-} from "../models/allModel.js";
+} from "../models/allModels.js";
 import {
   handleMongooseError,
   isValidObjectId,

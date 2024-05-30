@@ -3,7 +3,6 @@ import multer from "multer";
 
 import authenticateRole from "../middlewares/authMiddleware.js";
 
-import { userDetail } from "../controllers/usersControllers.js";
 import {
   register,
   login,

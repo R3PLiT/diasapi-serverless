@@ -330,8 +330,8 @@ export const customDate = {
 };
 
 // ===== certimage =====
-registerFont("templates/fonts/THSarabun Bold.ttf", { family: "Bold" });
-registerFont("templates/fonts/THSarabun.ttf", { family: "Normal" });
+registerFont("api/templates/fonts/THSarabun Bold.ttf", { family: "Bold" });
+registerFont("api/templates/fonts/THSarabun.ttf", { family: "Normal" });
 
 export const drawCertificate = async (certificateJson) => {
   try {
