@@ -323,6 +323,7 @@ export const customDate = {
 };
 
 // ===== certimage =====
+console.log("load fonts");
 registerFont("api/contracts/THSarabun Bold.ttf", { family: "Bold" });
 registerFont("api/contracts/THSarabun.ttf", { family: "Normal" });
 

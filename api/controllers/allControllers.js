@@ -13,23 +13,21 @@ import {
   CertificateTree,
   Certificate,
 } from "../models/allModels.js";
-import {
-  handleMongooseError,
-  isValidObjectId,
-  insertDocuments,
-  hashSHA256,
-  createMerkleTree,
-  treeDump,
-  getProofAll,
-  drawCertificate,
-  mailCertificates,
-  customDate,
-  hashDriveImage,
-} from "../utils/allUtils.js";
-import {
-  readContractData,
-  sendContractTransaction,
-} from "../services/connectEthers.js";
+import utl from "../utils/allUtils.js";
+// import {
+//   handleMongooseError,
+//   isValidObjectId,
+//   insertDocuments,
+//   hashSHA256,
+//   createMerkleTree,
+//   treeDump,
+//   getProofAll,
+//   drawCertificate,
+//   mailCertificates,
+//   customDate,
+//   hashDriveImage,
+// } from "../utils/allUtils.js";
+import { readContractData, sendContractTransaction } from "../services/connectEthers.js";
 
 // ===== main =====
 export const register = async (req, res, next) => {
@@ -42,18 +40,13 @@ export const register = async (req, res, next) => {
         email &&
         password &&
         role &&
-        ((role === "issuer" && instituteId) ||
-          (role !== "issuer" && !instituteId))
+        ((role === "issuer" && instituteId) || (role !== "issuer" && !instituteId))
       )
     ) {
       return next(createError(400));
     }
 
-    // if (!(!instituteId || (instituteId && isValidObjectId(instituteId)))) {
-    //   return next(createError(400, "invalid institute id"));
-    // }
-
-    if (instituteId && !isValidObjectId(instituteId)) {
+    if (instituteId && !utl.isValidObjectId(instituteId)) {
       return next(createError(400, "invalid institute id"));
     }
 
@@ -82,7 +75,7 @@ export const register = async (req, res, next) => {
     res.status(201).json({ message: "Created" });
   } catch (error) {
     console.error("==== register ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -129,8 +122,7 @@ export const login = async (req, res, next) => {
 
     if (user.userImage.data) {
       const userImage = user.userImage.toObject();
-      data.userImage =
-        userImage.contentType + "," + userImage.data.toString("base64");
+      data.userImage = userImage.contentType + "," + userImage.data.toString("base64");
     }
 
     res.json(data);
@@ -138,7 +130,7 @@ export const login = async (req, res, next) => {
     // res.json({ userId: user._id, role: user.role, token });
   } catch (error) {
     console.error("==== login ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -160,7 +152,7 @@ export const emailExists = async (req, res, next) => {
     res.json({ message: `email:${email} exists` });
   } catch (error) {
     console.error("==== emailExists ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -173,9 +165,7 @@ export const emailExists = async (req, res, next) => {
 export const userDetail = async (req, res, next) => {
   try {
     const { userId } = req.jwt;
-    const user = await User.findById(userId).select(
-      "-__v -createdAt -updatedAt"
-    );
+    const user = await User.findById(userId).select("-__v -createdAt -updatedAt");
 
     if (!user) {
       // return next(createError(404, "no user Found"));
@@ -185,14 +175,13 @@ export const userDetail = async (req, res, next) => {
     const userObj = user.toObject();
     if (userObj.userImage) {
       const userImage = user.userImage.toObject();
-      userObj.userImage =
-        userImage.contentType + "," + userImage.data.toString("base64");
+      userObj.userImage = userImage.contentType + "," + userImage.data.toString("base64");
     }
 
     res.json(userObj);
   } catch (error) {
     console.error("==== userDetail ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -214,9 +203,7 @@ export const getAllUser = async (req, res, next) => {
       const plainObj = user.toObject();
       if (plainObj.userImage) {
         const signatureBase64 =
-          plainObj.userImage.contentType +
-          "," +
-          plainObj.userImage.data.toString("base64");
+          plainObj.userImage.contentType + "," + plainObj.userImage.data.toString("base64");
         plainObj.userImage = signatureBase64;
       }
       return plainObj;
@@ -225,7 +212,7 @@ export const getAllUser = async (req, res, next) => {
     res.json(usersObj);
   } catch (error) {
     console.error("==== getAllUser ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -248,14 +235,13 @@ export const getUserById = async (req, res, next) => {
     const userObj = user.toObject();
     if (user.userImage) {
       const userImage = user.userImage.toObject();
-      userObj.userImage =
-        userImage.contentType + "," + userImage.data.toString("base64");
+      userObj.userImage = userImage.contentType + "," + userImage.data.toString("base64");
     }
 
     res.json(userObj);
   } catch (error) {
     console.error("==== getUserById ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -283,7 +269,7 @@ export const deleteUserById = async (req, res, next) => {
     res.json({ message: "user deleted successfully" });
   } catch (error) {
     console.error("==== deleteUserById ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -297,33 +283,29 @@ export const updateUserById = async (req, res, next) => {
   try {
     const { userId } = req.jwt;
     const { _id } = req.params;
+    const { name, oldPassword, newPassword, userImage } = req.body;
 
     if (userId !== _id) {
       return next(createError(403));
     }
 
-    const { name, oldPassword, newPassword, userImage } = req.body;
-
-    if (!name && !oldPassword && !newPassword) {
+    if (!name && !oldPassword && !newPassword && !userImage) {
       return next(createError(400, "no data to update"));
-    }
-
-    let select = "";
-    const update = {};
-
-    if (oldPassword && newPassword) {
-      select = "+password";
-    }
-
-    if (name) {
-      update.name = name;
     }
 
     if (!((oldPassword && newPassword) || (!oldPassword && !newPassword))) {
       return next(createError(400, "require both old and new password"));
     }
 
+    const update = {};
+
     if (oldPassword && newPassword) {
+      const user = await User.findById(_id).select("+password");
+
+      if (!user) {
+        return next(createError(404, "no user found"));
+      }
+
       const isValidPassword = await bcrypt.compare(oldPassword, user.password);
 
       if (!isValidPassword) {
@@ -333,33 +315,16 @@ export const updateUserById = async (req, res, next) => {
       update.password = await bcrypt.hash(newPassword, 10);
     }
 
+    if (name) {
+      update.name = name;
+    }
+
     if (userImage) {
       const split = userImage.split(",");
       const contentType = split[0];
       const data = Buffer.from(split[1], "base64");
       update.userImage = { data, contentType };
     }
-
-    // const update = name
-    //   ? { name, ...(hashedPassword ? { password: hashedPassword } : {}) }
-    //   : { ...(hashedPassword ? { password: hashedPassword } : {}) };
-
-    // const update = name
-    //   ? {
-    //       name,
-    //       ...(hashedPassword ? { password: hashedPassword } : {}),
-    //       ...(role ? { role } : {}),
-    //       // instituteId: role === "issuer" ? instituteId : null,
-    //       // ...(instituteId ? { instituteId } : {}),
-    //       ...(role === "user" ? { instituteId: null } : instituteId ? { instituteId } : {}),
-    //     }
-    //   : {
-    //       ...(hashedPassword ? { password: hashedPassword } : {}),
-    //       ...(role ? { role } : {}),
-    //       // instituteId: role === "issuer" ? instituteId : null,
-    //       // ...(instituteId ? { instituteId } : {}),
-    //       ...(role === "user" ? { instituteId: null } : instituteId ? { instituteId } : {}),
-    //     };
 
     const updUser = await User.findByIdAndUpdate(_id, update);
 
@@ -372,7 +337,7 @@ export const updateUserById = async (req, res, next) => {
     res.json({ message: "Updated" });
   } catch (error) {
     console.error("==== updateUserById ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -389,7 +354,7 @@ export const institutesList = async (req, res, next) => {
 
     const query = {};
 
-    if (_id && !isValidObjectId(_id)) {
+    if (_id && !utl.isValidObjectId(_id)) {
       return next(createError(400));
     }
 
@@ -415,7 +380,7 @@ export const institutesList = async (req, res, next) => {
     res.json(institutes);
   } catch (error) {
     console.error("==== getInstitutes ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -436,7 +401,7 @@ export const addInstitute = async (req, res, next) => {
     res.status(201).json({ message: "Created" });
   } catch (error) {
     console.error("==== addInstitute ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -450,13 +415,11 @@ export const getInstituteById = async (req, res, next) => {
   try {
     const { _id } = req.params;
 
-    if (!_id || !isValidObjectId(_id)) {
+    if (!_id || !utl.isValidObjectId(_id)) {
       return next(createError(400));
     }
 
-    const institute = await Institute.findById(_id).select(
-      "-__v,-createdAt -updatedAt"
-    );
+    const institute = await Institute.findById(_id).select("-__v,-createdAt -updatedAt");
 
     if (!institute) {
       return next(createError(404));
@@ -465,7 +428,7 @@ export const getInstituteById = async (req, res, next) => {
     res.json(institute);
   } catch (error) {
     console.error("==== getInstituteById ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -479,9 +442,7 @@ export const getInstituteCourses = async (req, res, next) => {
   try {
     const { instituteId } = req.jwt;
 
-    const courses = await Course.find({ instituteId }).select(
-      "-__v -createdAt -updatedAt"
-    );
+    const courses = await Course.find({ instituteId }).select("-__v -createdAt -updatedAt");
 
     if (courses.length === 0) {
       // return next(createError(404, "no courses found"));
@@ -492,9 +453,7 @@ export const getInstituteCourses = async (req, res, next) => {
       const plainObj = course.toObject();
       if (plainObj.signature) {
         const signatureBase64 =
-          plainObj.signature.contentType +
-          "," +
-          plainObj.signature.data.toString("base64");
+          plainObj.signature.contentType + "," + plainObj.signature.data.toString("base64");
         plainObj.signature = signatureBase64;
       }
       return plainObj;
@@ -503,7 +462,7 @@ export const getInstituteCourses = async (req, res, next) => {
     res.json(coursesModify);
   } catch (error) {
     console.error("==== getAllcourses ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -528,9 +487,7 @@ export const getMyCourses = async (req, res, next) => {
       where.createdBy = userId;
     }
 
-    const courses = await Course.find(where).select(
-      "-__v -createdAt -updatedAt"
-    );
+    const courses = await Course.find(where).select("-__v -createdAt -updatedAt");
 
     if (courses.length === 0) {
       // return next(createError(404, "no courses found"));
@@ -541,9 +498,7 @@ export const getMyCourses = async (req, res, next) => {
       const plainObj = obj.toObject();
       if (plainObj.signature) {
         const signatureBase64 =
-          plainObj.signature.contentType +
-          "," +
-          plainObj.signature.data.toString("base64");
+          plainObj.signature.contentType + "," + plainObj.signature.data.toString("base64");
         plainObj.signature = signatureBase64;
       }
       return plainObj;
@@ -552,7 +507,7 @@ export const getMyCourses = async (req, res, next) => {
     res.json(coursesModify);
   } catch (error) {
     console.error("==== getmecourses ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -588,7 +543,7 @@ export const addCourse = async (req, res, next) => {
     res.status(201).json({ message: "Created", _id: result._id });
   } catch (error) {
     console.error("==== addCourse ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -611,9 +566,7 @@ export const getCourseById = async (req, res, next) => {
       where.instituteId = instituteId;
     }
 
-    const course = await Course.findOne(where).select(
-      "-__v -createdAt -updatedAt"
-    );
+    const course = await Course.findOne(where).select("-__v -createdAt -updatedAt");
 
     if (!course) {
       // return next(createError(404, "no course Found"));
@@ -624,16 +577,14 @@ export const getCourseById = async (req, res, next) => {
 
     if (objCourse.signature) {
       const signatureBase64 =
-        objCourse.signature.contentType +
-        "," +
-        objCourse.signature.data.toString("base64");
+        objCourse.signature.contentType + "," + objCourse.signature.data.toString("base64");
       objCourse.signature = signatureBase64;
     }
 
     res.json(objCourse);
   } catch (error) {
     console.error("==== getCourseById ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -675,7 +626,7 @@ export const updateCourseById = async (req, res, next) => {
     res.json({ message: "Updated" });
   } catch (error) {
     console.error("==== updateCourseById ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -705,7 +656,7 @@ export const deleteCourseById = async (req, res, next) => {
     res.json({ message: "course deleted successfully" });
   } catch (error) {
     console.error("==== deleteCourseById ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -728,12 +679,12 @@ export const addGraduates = async (req, res, next) => {
       createdBy: userId,
     }));
 
-    const records = await insertDocuments(Graduate, documents);
+    const records = await utl.insertDocuments(Graduate, documents);
 
     res.status(201).json({ message: "graduates created ", records });
   } catch (error) {
     console.error("==== addGraduates ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -761,9 +712,7 @@ export const getGraduates = async (req, res, next) => {
     if (role !== "admin") {
       where.instituteId = instituteId;
     }
-    const graduates = await Graduate.find(where).select(
-      "-__v -createdAt -updatedAt"
-    );
+    const graduates = await Graduate.find(where).select("-__v -createdAt -updatedAt");
 
     if (graduates.length === 0) {
       // return next(createError(404, "no graduates found"));
@@ -773,7 +722,7 @@ export const getGraduates = async (req, res, next) => {
     res.json(graduates);
   } catch (error) {
     console.error("==== getgraduates ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -800,7 +749,7 @@ export const getGraduateById = async (req, res, next) => {
     res.json(graduate);
   } catch (error) {
     console.error("==== getGraduateById ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -828,7 +777,7 @@ export const deleteGraduateById = async (req, res, next) => {
     res.json({ message: "graduate deleted successfully" });
   } catch (error) {
     console.error("==== deleteGraduateById ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -863,7 +812,7 @@ export const updateGraduateById = async (req, res, next) => {
     res.json({ message: "Updated" });
   } catch (error) {
     console.error("==== updateGraduateById ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -925,7 +874,7 @@ export const certificatesList = async (req, res, next) => {
     res.send(certificates);
   } catch (error) {
     console.error("==== certificatesList ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -940,8 +889,7 @@ export const certificateJson = async (req, res, next) => {
     const { certificateUUID } = req.params;
 
     const query = { certificateUUID };
-    const select =
-      "certificateUUID certificateJson certificateHash signature -_id";
+    const select = "certificateUUID certificateJson certificateHash signature -_id";
 
     const document = await Certificate.findOne(query).select(select);
 
@@ -949,9 +897,7 @@ export const certificateJson = async (req, res, next) => {
       // throw createError(404, "no data found");
       throw createError(404);
     }
-    if (
-      `0x${hashSHA256(document.certificateJson)}` !== document.certificateHash
-    ) {
+    if (`0x${utl.hashSHA256(document.certificateJson)}` !== document.certificateHash) {
       return next(createError(500, "certificate data conflict"));
     }
 
@@ -964,14 +910,11 @@ export const certificateJson = async (req, res, next) => {
     });
 
     res.setHeader("Content-Type", "application/json");
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename=${certificateUUID}.json`
-    );
+    res.setHeader("Content-Disposition", `attachment; filename=${certificateUUID}.json`);
     res.send(jsonString);
   } catch (error) {
     console.error("==== certificateJson ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -986,8 +929,7 @@ export const certificatePNG = async (req, res, next) => {
     const { certificateUUID } = req.params;
 
     const query = { certificateUUID };
-    const select =
-      "certificateUUID certificateJson certificateHash signature -_id";
+    const select = "certificateUUID certificateJson certificateHash signature -_id";
 
     const document = await Certificate.findOne(query).select(select);
 
@@ -996,31 +938,21 @@ export const certificatePNG = async (req, res, next) => {
       throw createError(404);
     }
 
-    if (
-      `0x${hashSHA256(document.certificateJson)}` !== document.certificateHash
-    ) {
+    if (`0x${utl.hashSHA256(document.certificateJson)}` !== document.certificateHash) {
       return next(createError(500, "certificate data conflict"));
     }
 
     const certificate = JSON.parse(document.certificateJson);
 
     if (certificate.certificateDriveImgId) {
-      const imgHash = await hashDriveImage(certificate.certificateDriveImgId);
+      const imgHash = await utl.hashDriveImage(certificate.certificateDriveImgId);
       if (`0x${imgHash}` === certificate.certificateDriveImgHash) {
-        return res.redirect(
-          `https://drive.google.com/uc?id=${certificate.certificateDriveImgId}`
-        );
+        return res.redirect(`https://drive.google.com/uc?id=${certificate.certificateDriveImgId}`);
       } else {
         if (imgHash === "0") {
-          throw createError(
-            404,
-            `no image (${certificate.certificateDriveImgId}) found`
-          );
+          throw createError(404, `no image (${certificate.certificateDriveImgId}) found`);
         } else {
-          throw createError(
-            409,
-            `image hash (${certificate.certificateDriveImgId}) conflict`
-          );
+          throw createError(409, `image hash (${certificate.certificateDriveImgId}) conflict`);
         }
       }
     }
@@ -1031,7 +963,7 @@ export const certificatePNG = async (req, res, next) => {
 
     res.setHeader("Content-Type", "image/png");
     // res.setHeader("Content-Disposition", `attachment; filename=${certificateUUID}.png`);
-    const canvas = await drawCertificate(document.certificateJson);
+    const canvas = await utl.drawCertificate(document.certificateJson);
     const stream = canvas.createPNGStream();
     stream.pipe(res);
     res.on("finish", () => {
@@ -1039,7 +971,7 @@ export const certificatePNG = async (req, res, next) => {
     });
   } catch (error) {
     console.error("==== certificatePNG ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -1060,11 +992,7 @@ export const revokeCertificate = async (req, res, next) => {
     const update = { certificateRevoked: true };
     const options = { session, new: true };
 
-    const result = await Graduate.findOneAndUpdate(
-      queryGraduate,
-      update,
-      options
-    );
+    const result = await Graduate.findOneAndUpdate(queryGraduate, update, options);
 
     if (!result) {
       throw createError(404);
@@ -1081,9 +1009,7 @@ export const revokeCertificate = async (req, res, next) => {
       throw createError(404);
     }
 
-    if (
-      `0x${hashSHA256(document.certificateJson)}` !== document.certificateHash
-    ) {
+    if (`0x${utl.hashSHA256(document.certificateJson)}` !== document.certificateHash) {
       return next(createError(500, "Certificate data conflict"));
     }
 
@@ -1097,9 +1023,7 @@ export const revokeCertificate = async (req, res, next) => {
 
     res.json({ transactionHash, certificateUUID, certificateHash: leaf });
   } catch (error) {
-    if (
-      error.message === "execution reverted: This certificate has been revoked."
-    ) {
+    if (error.message === "execution reverted: This certificate has been revoked.") {
       try {
         await session.commitTransaction();
         res.json({
@@ -1113,7 +1037,7 @@ export const revokeCertificate = async (req, res, next) => {
     } else {
       await session.abortTransaction();
       console.error("==== revokeCertificate ====\n", error);
-      const handledError = handleMongooseError(error);
+      const handledError = utl.handleMongooseError(error);
       if (createError.isHttpError(handledError)) {
         next(handledError);
       } else {
@@ -1137,7 +1061,7 @@ export const verifyCertificate = async (req, res, next) => {
     const certificateJson = JSON.stringify(certificate.certificateJson);
 
     if (
-      `0x${hashSHA256(certificateJson)}` !== certificate.certificateHash ||
+      `0x${utl.hashSHA256(certificateJson)}` !== certificate.certificateHash ||
       certificate.certificateHash !== certificate.signature.leaf
     ) {
       return next(createError(409, "Certificate data conflict"));
@@ -1147,7 +1071,7 @@ export const verifyCertificate = async (req, res, next) => {
 
     // if (
     //   document.expireDate &&
-    //   document.expireDate < customDate.dateFormat("now", "YYYYMMDD", "en")
+    //   document.expireDate < utl.customDate.dateFormat("now", "YYYYMMDD", "en")
     // ) {
     //   return next(createError(409, "certificate expired"));
     // }
@@ -1163,7 +1087,7 @@ export const verifyCertificate = async (req, res, next) => {
     if (result) {
       if (
         document.expireDate &&
-        document.expireDate < customDate.dateFormat("now", "YYYYMMDD", "en")
+        document.expireDate < utl.customDate.dateFormat("now", "YYYYMMDD", "en")
       ) {
         // return next(createError(400, "This certificate is valid but EXPIRED"));
         message = "expired";
@@ -1180,7 +1104,7 @@ export const verifyCertificate = async (req, res, next) => {
       }
 
       if (document.certificateDriveImgId) {
-        const imgHash = await hashDriveImage(obj.certificateDriveImgId);
+        const imgHash = await utl.hashDriveImage(obj.certificateDriveImgId);
         if (`0x${imgHash}` === document.certificateDriveImgHash) {
           outURL = JSON.stringify({
             // message: "This certificate is valid.",
@@ -1196,7 +1120,7 @@ export const verifyCertificate = async (req, res, next) => {
           });
         }
       } else if (document.layoutId) {
-        const canvas = await drawCertificate(certificateJson);
+        const canvas = await utl.drawCertificate(certificateJson);
 
         outURL = JSON.stringify({
           // message: "This certificate is valid.",
@@ -1226,7 +1150,7 @@ export const verifyCertificate = async (req, res, next) => {
       res.type("json").send(outURL);
     } else {
       console.error("==== verifyCertificate ====\n", error);
-      const handledError = handleMongooseError(error);
+      const handledError = utl.handleMongooseError(error);
       if (createError.isHttpError(handledError)) {
         next(handledError);
       } else {
@@ -1243,19 +1167,16 @@ export const prepareCetificates = async (req, res, next) => {
 
     for (let obj of certificates) {
       if (obj.certificateDriveImgId) {
-        const imgHash = await hashDriveImage(obj.certificateDriveImgId);
+        const imgHash = await utl.hashDriveImage(obj.certificateDriveImgId);
         obj.certificateDriveImgHash = `0x${imgHash}`;
         if (imgHash === "0") {
-          throw createError(
-            404,
-            `no image (${obj.certificateDriveImgId}) found`
-          );
+          throw createError(404, `no image (${obj.certificateDriveImgId}) found`);
         } else {
           obj.certificateDriveImgHash = `0x${imgHash}`;
         }
       }
       const jsonStr = JSON.stringify(obj);
-      const hash = hashSHA256(jsonStr);
+      const hash = utl.hashSHA256(jsonStr);
       obj.certificateJson = jsonStr;
       obj.certificateHash = `0x${hash}`;
     }
@@ -1274,12 +1195,12 @@ export const prepareCetificates = async (req, res, next) => {
       issueBatchId,
     }));
 
-    const records = await insertDocuments(Certificate, documents);
+    const records = await utl.insertDocuments(Certificate, documents);
 
     res.json({ message: "Certificates have been prepared", records });
   } catch (error) {
     console.error("==== prepareCetificates ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -1311,16 +1232,16 @@ export const issueCertificates = async (req, res, next) => {
     }
 
     const certificatesHash = documents.map((obj) => [obj.certificateHash]);
-    const tree = createMerkleTree(certificatesHash, ["bytes32"]);
+    const tree = utl.createMerkleTree(certificatesHash, ["bytes32"]);
 
     const root = tree.root;
-    const treeDumpData = treeDump(tree);
+    const treeDumpData = utl.treeDump(tree);
 
     const document = [{ root, treeDumpData }];
 
     await CertificateTree.create(document, { session });
 
-    const signatures = getProofAll(tree);
+    const signatures = utl.getProofAll(tree);
 
     let count = 0;
     for (const key in signatures) {
@@ -1349,7 +1270,7 @@ export const issueCertificates = async (req, res, next) => {
   } catch (error) {
     await session.abortTransaction();
     console.error("==== issueCertificates ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -1381,12 +1302,12 @@ export const sendCertificates = async (req, res, next) => {
       // throw createError(404, "no data found");
       throw createError(404);
     }
-    const result = await mailCertificates(documents);
+    const result = await utl.mailCertificates(documents);
 
     res.json(result);
   } catch (error) {
     console.error("==== sendCertificates ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -1494,7 +1415,7 @@ export const makeCertificatesData = async (req, res, next) => {
       // }
 
       const jsonStr = JSON.stringify(certificateData);
-      const hash = hashSHA256(jsonStr);
+      const hash = utl.hashSHA256(jsonStr);
 
       const document = {
         certificateUUID: randomUUID(),
@@ -1533,16 +1454,16 @@ export const makeCertificatesData = async (req, res, next) => {
 
     const certificatesHash = documents.map((obj) => [obj.certificateHash]);
 
-    const tree = createMerkleTree(certificatesHash, ["bytes32"]);
+    const tree = utl.createMerkleTree(certificatesHash, ["bytes32"]);
 
     const root = tree.root;
-    const treeDumpData = treeDump(tree);
+    const treeDumpData = utl.treeDump(tree);
 
     const document = [{ root, treeDumpData, createdBy: userId }];
 
     await CertificateTree.create(document, { session });
 
-    const signatures = getProofAll(tree);
+    const signatures = utl.getProofAll(tree);
     const count = documents.length;
 
     // const transactionHash = await sendContractTransaction("addRoot", root);
@@ -1586,19 +1507,14 @@ export const makeCertificatesData = async (req, res, next) => {
 
       await Certificate.bulkWrite(bulkOps);
     } catch (updateError) {
-      console.error(
-        "Failed to update transactionHash:",
-        transactionHash,
-        "\n",
-        updateError
-      );
+      console.error("Failed to update transactionHash:", transactionHash, "\n", updateError);
     }
 
     res.status(201).json({ transactionHash, root, certificates: count });
   } catch (error) {
     await session.abortTransaction();
     console.error("==== makeCertificatesData ====\n", error);
-    const handledError = handleMongooseError(error);
+    const handledError = utl.handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
