@@ -9,7 +9,7 @@
   "functions": {
     "api/index.js": {
       "maxDuration": 60,
-      "includeFiles": "api/contracts/*, api/templtes/*"
+      "includeFiles": "api/contracts/*"
     }
   }
 }

@@ -324,8 +324,8 @@ export const customDate = {
 
 // ===== certimage =====
 // console.log("load fonts");
-registerFont("api/contracts/THSarabun Bold.ttf", { family: "Bold" });
-registerFont("api/contracts/THSarabun.ttf", { family: "Normal" });
+registerFont("api/contracts/fonts/THSarabun Bold.ttf", { family: "Bold" });
+registerFont("api/contracts/fonts/THSarabun.ttf", { family: "Normal" });
 
 export const drawCertificate = async (certificateJson) => {
   try {
