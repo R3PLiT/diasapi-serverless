@@ -324,21 +324,23 @@ export const customDate = {
 
 // ===== certimage =====
 // console.log("load fonts");
-registerFont("api/contracts/fonts/THSarabun Bold.ttf", { family: "Bold" });
-registerFont("api/contracts/fonts/THSarabun.ttf", { family: "Normal" });
+registerFont("api/includes/templates/fonts/THSarabun Bold.ttf", { family: "Bold" });
+registerFont("api/includes/templates/fonts/THSarabun.ttf", { family: "Normal" });
 
 export const drawCertificate = async (certificateJson) => {
   try {
     const certificate = JSON.parse(certificateJson);
-    const layout = JSON.parse(fs.readFileSync(`api/contracts/${certificate.layoutId}.json`));
+    const layout = JSON.parse(
+      fs.readFileSync(`api/includes/templates/${certificate.layoutId}.json`)
+    );
 
-    const imageTemplate = await loadImage(`api/contracts/${layout.template}`);
+    const imageTemplate = await loadImage(`api/includes/templates/${layout.template}`);
     const canvas = createCanvas(imageTemplate.width, imageTemplate.height);
     const ctx = canvas.getContext("2d");
     ctx.drawImage(imageTemplate, 0, 0);
 
     for (let i = 0; i < layout.images.length; i++) {
-      const img = await loadImage(`api/contracts/${layout.images[i].image}`);
+      const img = await loadImage(`api/includes/templates/${layout.images[i].image}`);
       ctx.drawImage(
         img,
         layout.images[i].x,
