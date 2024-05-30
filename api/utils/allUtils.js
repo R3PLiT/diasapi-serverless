@@ -1,4 +1,5 @@
 import "dotenv/config";
+import fs from "fs";
 import createError from "http-errors";
 import mongoose from "mongoose";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
