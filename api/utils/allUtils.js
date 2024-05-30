@@ -42,18 +42,12 @@ export const handleMongooseError = (error) => {
           const regex = /.*(?=for)/;
           const matches = error.errors[field].message.match(regex);
           if (matches) {
-            customMessage[
-              field
-            ] = `${matches[0]} ('${error.errors[field].value}')`;
+            customMessage[field] = `${matches[0]} ('${error.errors[field].value}')`;
           } else {
-            customMessage[
-              field
-            ] = `${error.errors[field].name} ('${error.errors[field].value}')`;
+            customMessage[field] = `${error.errors[field].name} ('${error.errors[field].value}')`;
           }
         } else {
-          customMessage[
-            field
-          ] = `${error.errors[field].message} ('${error.errors[field].value}')`;
+          customMessage[field] = `${error.errors[field].message} ('${error.errors[field].value}')`;
         }
       }
       return createError(422, "ValidationError", { customMessage });
@@ -197,9 +191,7 @@ export const mailCertificates = async (details) => {
         to: recipientEmail,
         subject: `Your Certificate (ประกาศนียบัตรของคุณ)`,
         html: `
-        <p>เรียน ${
-          recipientName ? recipientName : `${titleName}${firstName} ${lastName}`
-        },</p>
+        <p>เรียน ${recipientName ? recipientName : `${titleName}${firstName} ${lastName}`},</p>
         <p>คุณได้รับประกาศนียบัตร${
           instituteName ? `จาก ${instituteName}` : ""
         } สำหรับหลักสูตร ${courseName}</p>
@@ -330,72 +322,73 @@ export const customDate = {
 };
 
 // ===== certimage =====
-registerFont("api/extras/templates/fonts/THSarabun Bold.ttf", { family: "Bold" });
-registerFont("api/extras/templates/fonts/THSarabun.ttf", { family: "Normal" });
+// registerFont("api/extras/templates/fonts/THSarabun Bold.ttf", { family: "Bold" });
+// registerFont("api/extras/templates/fonts/THSarabun.ttf", { family: "Normal" });
 
 export const drawCertificate = async (certificateJson) => {
   try {
-    const certificate = JSON.parse(certificateJson);
-    const layout = JSON.parse(
-      fs.readFileSync(`api/extras/templates/${certificate.layoutId}.json`)
-    );
+    // const certificate = JSON.parse(certificateJson);
+    // const layout = JSON.parse(
+    //   fs.readFileSync(`api/extras/templates/${certificate.layoutId}.json`)
+    // );
 
-    const imageTemplate = await loadImage(`api/extras/templates/${layout.template}`);
-    const canvas = createCanvas(imageTemplate.width, imageTemplate.height);
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(imageTemplate, 0, 0);
+    // const imageTemplate = await loadImage(`api/extras/templates/${layout.template}`);
+    // const canvas = createCanvas(imageTemplate.width, imageTemplate.height);
+    // const ctx = canvas.getContext("2d");
+    // ctx.drawImage(imageTemplate, 0, 0);
 
-    for (let i = 0; i < layout.images.length; i++) {
-      const img = await loadImage(`api/extras/templates/${layout.images[i].image}`);
-      ctx.drawImage(
-        img,
-        layout.images[i].x,
-        layout.images[i].y,
-        layout.images[i].width,
-        layout.images[i].height
-      );
-    }
+    // for (let i = 0; i < layout.images.length; i++) {
+    //   const img = await loadImage(`api/extras/templates/${layout.images[i].image}`);
+    //   ctx.drawImage(
+    //     img,
+    //     layout.images[i].x,
+    //     layout.images[i].y,
+    //     layout.images[i].width,
+    //     layout.images[i].height
+    //   );
+    // }
 
-    for (let j = 0; j < layout.texts.length; j++) {
-      ctx.font = `${layout.texts[j].fontsize}px "${layout.texts[j].font}"`;
-      ctx.textAlign = layout.texts[j].align;
+    // for (let j = 0; j < layout.texts.length; j++) {
+    //   ctx.font = `${layout.texts[j].fontsize}px "${layout.texts[j].font}"`;
+    //   ctx.textAlign = layout.texts[j].align;
 
-      // let textString;
-      // for (let k = 0; k < layout.texts[j].text.length; k++) {
-      //   textString = textString
-      //     ? textString + " " + certificate[layout.texts[j].text[k].field]
-      //     : certificate[layout.texts[j].text[k].field];
-      // }
+    //   // let textString;
+    //   // for (let k = 0; k < layout.texts[j].text.length; k++) {
+    //   //   textString = textString
+    //   //     ? textString + " " + certificate[layout.texts[j].text[k].field]
+    //   //     : certificate[layout.texts[j].text[k].field];
+    //   // }
 
-      // if (layout.texts[j].dateformat) {
-      //   textString = customDate.dateFormat(
-      //     textString,
-      //     layout.texts[j].dateformat.format,
-      //     layout.texts[j].dateformat.locale
-      //   );
-      // }
-      // ctx.fillText(textString, layout.texts[j].x, layout.texts[j].y);
+    //   // if (layout.texts[j].dateformat) {
+    //   //   textString = customDate.dateFormat(
+    //   //     textString,
+    //   //     layout.texts[j].dateformat.format,
+    //   //     layout.texts[j].dateformat.locale
+    //   //   );
+    //   // }
+    //   // ctx.fillText(textString, layout.texts[j].x, layout.texts[j].y);
 
-      let textString = certificate[layout.texts[j].text];
-      if (textString) {
-        if (layout.texts[j].dateformat) {
-          textString = customDate.dateFormat(
-            textString,
-            layout.texts[j].dateformat.format,
-            layout.texts[j].dateformat.locale
-          );
-        }
-        if (layout.texts[j].digits) {
-          textString = nd.replaceDigits(textString, layout.texts[j].digits);
-        }
-        if (layout.texts[j].color) {
-          ctx.fillStyle = layout.texts[j].color;
-        }
+    //   let textString = certificate[layout.texts[j].text];
+    //   if (textString) {
+    //     if (layout.texts[j].dateformat) {
+    //       textString = customDate.dateFormat(
+    //         textString,
+    //         layout.texts[j].dateformat.format,
+    //         layout.texts[j].dateformat.locale
+    //       );
+    //     }
+    //     if (layout.texts[j].digits) {
+    //       textString = nd.replaceDigits(textString, layout.texts[j].digits);
+    //     }
+    //     if (layout.texts[j].color) {
+    //       ctx.fillStyle = layout.texts[j].color;
+    //     }
 
-        ctx.fillText(textString, layout.texts[j].x, layout.texts[j].y);
-      }
-    }
-    return canvas;
+    //     ctx.fillText(textString, layout.texts[j].x, layout.texts[j].y);
+    //   }
+    // }
+    // return canvas;
+    throw new Error("Blank");
   } catch (error) {
     console.error("==== drawCertificate ====\n", error);
     // throw createError(500, "draw image Error");
