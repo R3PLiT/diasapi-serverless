@@ -9,7 +9,6 @@
   "functions": {
     "api/index.js": {
       "maxDuration": 60,
-      "includeFiles": "api/contracts/diasCerts.json"
-    }
+      "includeFiles": "api/contracts/diasCerts.json,api/templates/**/*"
   }
 }
