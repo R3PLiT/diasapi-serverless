@@ -13,20 +13,19 @@ import {
   CertificateTree,
   Certificate,
 } from "../models/allModels.js";
-import utl from "../utils/allUtils.js";
-// import {
-//   handleMongooseError,
-//   isValidObjectId,
-//   insertDocuments,
-//   hashSHA256,
-//   createMerkleTree,
-//   treeDump,
-//   getProofAll,
-//   drawCertificate,
-//   mailCertificates,
-//   customDate,
-//   hashDriveImage,
-// } from "../utils/allUtils.js";
+import {
+  handleMongooseError,
+  isValidObjectId,
+  insertDocuments,
+  hashSHA256,
+  createMerkleTree,
+  treeDump,
+  getProofAll,
+  drawCertificate,
+  mailCertificates,
+  customDate,
+  hashDriveImage,
+} from "../utils/allUtils.js";
 import { readContractData, sendContractTransaction } from "../services/connectEthers.js";
 
 // ===== main =====
@@ -46,7 +45,7 @@ export const register = async (req, res, next) => {
       return next(createError(400));
     }
 
-    if (instituteId && !utl.isValidObjectId(instituteId)) {
+    if (instituteId && !isValidObjectId(instituteId)) {
       return next(createError(400, "invalid institute id"));
     }
 
@@ -75,7 +74,7 @@ export const register = async (req, res, next) => {
     res.status(201).json({ message: "Created" });
   } catch (error) {
     console.error("==== register ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -130,7 +129,7 @@ export const login = async (req, res, next) => {
     // res.json({ userId: user._id, role: user.role, token });
   } catch (error) {
     console.error("==== login ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -152,7 +151,7 @@ export const emailExists = async (req, res, next) => {
     res.json({ message: `email:${email} exists` });
   } catch (error) {
     console.error("==== emailExists ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -181,7 +180,7 @@ export const userDetail = async (req, res, next) => {
     res.json(userObj);
   } catch (error) {
     console.error("==== userDetail ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -212,7 +211,7 @@ export const getAllUser = async (req, res, next) => {
     res.json(usersObj);
   } catch (error) {
     console.error("==== getAllUser ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -241,7 +240,7 @@ export const getUserById = async (req, res, next) => {
     res.json(userObj);
   } catch (error) {
     console.error("==== getUserById ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -269,7 +268,7 @@ export const deleteUserById = async (req, res, next) => {
     res.json({ message: "user deleted successfully" });
   } catch (error) {
     console.error("==== deleteUserById ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -337,7 +336,7 @@ export const updateUserById = async (req, res, next) => {
     res.json({ message: "Updated" });
   } catch (error) {
     console.error("==== updateUserById ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -354,7 +353,7 @@ export const institutesList = async (req, res, next) => {
 
     const query = {};
 
-    if (_id && !utl.isValidObjectId(_id)) {
+    if (_id && !isValidObjectId(_id)) {
       return next(createError(400));
     }
 
@@ -380,7 +379,7 @@ export const institutesList = async (req, res, next) => {
     res.json(institutes);
   } catch (error) {
     console.error("==== getInstitutes ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -401,7 +400,7 @@ export const addInstitute = async (req, res, next) => {
     res.status(201).json({ message: "Created" });
   } catch (error) {
     console.error("==== addInstitute ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -415,7 +414,7 @@ export const getInstituteById = async (req, res, next) => {
   try {
     const { _id } = req.params;
 
-    if (!_id || !utl.isValidObjectId(_id)) {
+    if (!_id || !isValidObjectId(_id)) {
       return next(createError(400));
     }
 
@@ -428,7 +427,7 @@ export const getInstituteById = async (req, res, next) => {
     res.json(institute);
   } catch (error) {
     console.error("==== getInstituteById ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -462,7 +461,7 @@ export const getInstituteCourses = async (req, res, next) => {
     res.json(coursesModify);
   } catch (error) {
     console.error("==== getAllcourses ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -507,7 +506,7 @@ export const getMyCourses = async (req, res, next) => {
     res.json(coursesModify);
   } catch (error) {
     console.error("==== getmecourses ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -543,7 +542,7 @@ export const addCourse = async (req, res, next) => {
     res.status(201).json({ message: "Created", _id: result._id });
   } catch (error) {
     console.error("==== addCourse ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -584,7 +583,7 @@ export const getCourseById = async (req, res, next) => {
     res.json(objCourse);
   } catch (error) {
     console.error("==== getCourseById ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -626,7 +625,7 @@ export const updateCourseById = async (req, res, next) => {
     res.json({ message: "Updated" });
   } catch (error) {
     console.error("==== updateCourseById ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -656,7 +655,7 @@ export const deleteCourseById = async (req, res, next) => {
     res.json({ message: "course deleted successfully" });
   } catch (error) {
     console.error("==== deleteCourseById ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -679,12 +678,12 @@ export const addGraduates = async (req, res, next) => {
       createdBy: userId,
     }));
 
-    const records = await utl.insertDocuments(Graduate, documents);
+    const records = await insertDocuments(Graduate, documents);
 
     res.status(201).json({ message: "graduates created ", records });
   } catch (error) {
     console.error("==== addGraduates ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -722,7 +721,7 @@ export const getGraduates = async (req, res, next) => {
     res.json(graduates);
   } catch (error) {
     console.error("==== getgraduates ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -749,7 +748,7 @@ export const getGraduateById = async (req, res, next) => {
     res.json(graduate);
   } catch (error) {
     console.error("==== getGraduateById ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -777,7 +776,7 @@ export const deleteGraduateById = async (req, res, next) => {
     res.json({ message: "graduate deleted successfully" });
   } catch (error) {
     console.error("==== deleteGraduateById ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -812,7 +811,7 @@ export const updateGraduateById = async (req, res, next) => {
     res.json({ message: "Updated" });
   } catch (error) {
     console.error("==== updateGraduateById ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -874,7 +873,7 @@ export const certificatesList = async (req, res, next) => {
     res.send(certificates);
   } catch (error) {
     console.error("==== certificatesList ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -897,7 +896,7 @@ export const certificateJson = async (req, res, next) => {
       // throw createError(404, "no data found");
       throw createError(404);
     }
-    if (`0x${utl.hashSHA256(document.certificateJson)}` !== document.certificateHash) {
+    if (`0x${hashSHA256(document.certificateJson)}` !== document.certificateHash) {
       return next(createError(500, "certificate data conflict"));
     }
 
@@ -914,7 +913,7 @@ export const certificateJson = async (req, res, next) => {
     res.send(jsonString);
   } catch (error) {
     console.error("==== certificateJson ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -938,14 +937,14 @@ export const certificatePNG = async (req, res, next) => {
       throw createError(404);
     }
 
-    if (`0x${utl.hashSHA256(document.certificateJson)}` !== document.certificateHash) {
+    if (`0x${hashSHA256(document.certificateJson)}` !== document.certificateHash) {
       return next(createError(500, "certificate data conflict"));
     }
 
     const certificate = JSON.parse(document.certificateJson);
 
     if (certificate.certificateDriveImgId) {
-      const imgHash = await utl.hashDriveImage(certificate.certificateDriveImgId);
+      const imgHash = await hashDriveImage(certificate.certificateDriveImgId);
       if (`0x${imgHash}` === certificate.certificateDriveImgHash) {
         return res.redirect(`https://drive.google.com/uc?id=${certificate.certificateDriveImgId}`);
       } else {
@@ -963,7 +962,7 @@ export const certificatePNG = async (req, res, next) => {
 
     res.setHeader("Content-Type", "image/png");
     // res.setHeader("Content-Disposition", `attachment; filename=${certificateUUID}.png`);
-    const canvas = await utl.drawCertificate(document.certificateJson);
+    const canvas = await drawCertificate(document.certificateJson);
     const stream = canvas.createPNGStream();
     stream.pipe(res);
     res.on("finish", () => {
@@ -971,7 +970,7 @@ export const certificatePNG = async (req, res, next) => {
     });
   } catch (error) {
     console.error("==== certificatePNG ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -1009,7 +1008,7 @@ export const revokeCertificate = async (req, res, next) => {
       throw createError(404);
     }
 
-    if (`0x${utl.hashSHA256(document.certificateJson)}` !== document.certificateHash) {
+    if (`0x${hashSHA256(document.certificateJson)}` !== document.certificateHash) {
       return next(createError(500, "Certificate data conflict"));
     }
 
@@ -1037,7 +1036,7 @@ export const revokeCertificate = async (req, res, next) => {
     } else {
       await session.abortTransaction();
       console.error("==== revokeCertificate ====\n", error);
-      const handledError = utl.handleMongooseError(error);
+      const handledError = handleMongooseError(error);
       if (createError.isHttpError(handledError)) {
         next(handledError);
       } else {
@@ -1061,7 +1060,7 @@ export const verifyCertificate = async (req, res, next) => {
     const certificateJson = JSON.stringify(certificate.certificateJson);
 
     if (
-      `0x${utl.hashSHA256(certificateJson)}` !== certificate.certificateHash ||
+      `0x${hashSHA256(certificateJson)}` !== certificate.certificateHash ||
       certificate.certificateHash !== certificate.signature.leaf
     ) {
       return next(createError(409, "Certificate data conflict"));
@@ -1071,7 +1070,7 @@ export const verifyCertificate = async (req, res, next) => {
 
     // if (
     //   document.expireDate &&
-    //   document.expireDate < utl.customDate.dateFormat("now", "YYYYMMDD", "en")
+    //   document.expireDate < customDate.dateFormat("now", "YYYYMMDD", "en")
     // ) {
     //   return next(createError(409, "certificate expired"));
     // }
@@ -1087,7 +1086,7 @@ export const verifyCertificate = async (req, res, next) => {
     if (result) {
       if (
         document.expireDate &&
-        document.expireDate < utl.customDate.dateFormat("now", "YYYYMMDD", "en")
+        document.expireDate < customDate.dateFormat("now", "YYYYMMDD", "en")
       ) {
         // return next(createError(400, "This certificate is valid but EXPIRED"));
         message = "expired";
@@ -1104,7 +1103,7 @@ export const verifyCertificate = async (req, res, next) => {
       }
 
       if (document.certificateDriveImgId) {
-        const imgHash = await utl.hashDriveImage(obj.certificateDriveImgId);
+        const imgHash = await hashDriveImage(obj.certificateDriveImgId);
         if (`0x${imgHash}` === document.certificateDriveImgHash) {
           outURL = JSON.stringify({
             // message: "This certificate is valid.",
@@ -1120,7 +1119,7 @@ export const verifyCertificate = async (req, res, next) => {
           });
         }
       } else if (document.layoutId) {
-        const canvas = await utl.drawCertificate(certificateJson);
+        const canvas = await drawCertificate(certificateJson);
 
         outURL = JSON.stringify({
           // message: "This certificate is valid.",
@@ -1150,7 +1149,7 @@ export const verifyCertificate = async (req, res, next) => {
       res.type("json").send(outURL);
     } else {
       console.error("==== verifyCertificate ====\n", error);
-      const handledError = utl.handleMongooseError(error);
+      const handledError = handleMongooseError(error);
       if (createError.isHttpError(handledError)) {
         next(handledError);
       } else {
@@ -1167,7 +1166,7 @@ export const prepareCetificates = async (req, res, next) => {
 
     for (let obj of certificates) {
       if (obj.certificateDriveImgId) {
-        const imgHash = await utl.hashDriveImage(obj.certificateDriveImgId);
+        const imgHash = await hashDriveImage(obj.certificateDriveImgId);
         obj.certificateDriveImgHash = `0x${imgHash}`;
         if (imgHash === "0") {
           throw createError(404, `no image (${obj.certificateDriveImgId}) found`);
@@ -1176,7 +1175,7 @@ export const prepareCetificates = async (req, res, next) => {
         }
       }
       const jsonStr = JSON.stringify(obj);
-      const hash = utl.hashSHA256(jsonStr);
+      const hash = hashSHA256(jsonStr);
       obj.certificateJson = jsonStr;
       obj.certificateHash = `0x${hash}`;
     }
@@ -1195,12 +1194,12 @@ export const prepareCetificates = async (req, res, next) => {
       issueBatchId,
     }));
 
-    const records = await utl.insertDocuments(Certificate, documents);
+    const records = await insertDocuments(Certificate, documents);
 
     res.json({ message: "Certificates have been prepared", records });
   } catch (error) {
     console.error("==== prepareCetificates ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -1232,16 +1231,16 @@ export const issueCertificates = async (req, res, next) => {
     }
 
     const certificatesHash = documents.map((obj) => [obj.certificateHash]);
-    const tree = utl.createMerkleTree(certificatesHash, ["bytes32"]);
+    const tree = createMerkleTree(certificatesHash, ["bytes32"]);
 
     const root = tree.root;
-    const treeDumpData = utl.treeDump(tree);
+    const treeDumpData = treeDump(tree);
 
     const document = [{ root, treeDumpData }];
 
     await CertificateTree.create(document, { session });
 
-    const signatures = utl.getProofAll(tree);
+    const signatures = getProofAll(tree);
 
     let count = 0;
     for (const key in signatures) {
@@ -1270,7 +1269,7 @@ export const issueCertificates = async (req, res, next) => {
   } catch (error) {
     await session.abortTransaction();
     console.error("==== issueCertificates ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -1302,12 +1301,12 @@ export const sendCertificates = async (req, res, next) => {
       // throw createError(404, "no data found");
       throw createError(404);
     }
-    const result = await utl.mailCertificates(documents);
+    const result = await mailCertificates(documents);
 
     res.json(result);
   } catch (error) {
     console.error("==== sendCertificates ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
@@ -1415,7 +1414,7 @@ export const makeCertificatesData = async (req, res, next) => {
       // }
 
       const jsonStr = JSON.stringify(certificateData);
-      const hash = utl.hashSHA256(jsonStr);
+      const hash = hashSHA256(jsonStr);
 
       const document = {
         certificateUUID: randomUUID(),
@@ -1454,16 +1453,16 @@ export const makeCertificatesData = async (req, res, next) => {
 
     const certificatesHash = documents.map((obj) => [obj.certificateHash]);
 
-    const tree = utl.createMerkleTree(certificatesHash, ["bytes32"]);
+    const tree = createMerkleTree(certificatesHash, ["bytes32"]);
 
     const root = tree.root;
-    const treeDumpData = utl.treeDump(tree);
+    const treeDumpData = treeDump(tree);
 
     const document = [{ root, treeDumpData, createdBy: userId }];
 
     await CertificateTree.create(document, { session });
 
-    const signatures = utl.getProofAll(tree);
+    const signatures = getProofAll(tree);
     const count = documents.length;
 
     // const transactionHash = await sendContractTransaction("addRoot", root);
@@ -1514,7 +1513,7 @@ export const makeCertificatesData = async (req, res, next) => {
   } catch (error) {
     await session.abortTransaction();
     console.error("==== makeCertificatesData ====\n", error);
-    const handledError = utl.handleMongooseError(error);
+    const handledError = handleMongooseError(error);
     if (createError.isHttpError(handledError)) {
       next(handledError);
     } else {
