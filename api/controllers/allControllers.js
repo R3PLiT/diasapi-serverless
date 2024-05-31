@@ -1466,6 +1466,7 @@ export const makeCertificatesData = async (req, res, next) => {
           updatedAt,
           issueStatus,
           createdBy: courseCreatedBy,
+          __v,
           ...courseDetail
         },
         instituteId: instId,
