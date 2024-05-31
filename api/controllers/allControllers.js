@@ -1487,14 +1487,12 @@ export const makeCertificatesData = async (req, res, next) => {
         instituteId,
       };
 
-      console.log(certificateData);
       if (
         certificateData.signatureArray &&
         certificateData.signatureArray.length === 0
       ) {
         delete certificateData.signatureArray;
       }
-      console.log(certificateData);
 
       // console.log(certificateData);
 
@@ -1536,10 +1534,7 @@ export const makeCertificatesData = async (req, res, next) => {
       if (!updatedCourseIds.has(courseId)) {
         certificate.courseId.issueStatus = "I";
 
-        if (
-          certificate.signatureArray &&
-          certificate.signatureArray.length === 0
-        ) {
+        if (!certificate.signatureArray) {
           certificate.signatureArray = undefined;
           console.log("array");
         }
