@@ -596,6 +596,10 @@ export const getCourseById = async (req, res, next) => {
       return next(createError(404));
     }
 
+    if (course.signatureArray && course.signatureArray.length === 0) {
+      course.signatureArray = undefined;
+    }
+
     const objCourse = course.toObject();
 
     if (objCourse.signature) {
