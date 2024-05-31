@@ -127,6 +127,7 @@ const courseSchema = new mongoose.Schema(
         signature: { type: String },
         signName: { type: String },
       },
+      { _id: false },
     ],
     // ============ OR =================
     // 2.-------------------------------
