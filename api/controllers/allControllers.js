@@ -1534,7 +1534,13 @@ export const makeCertificatesData = async (req, res, next) => {
       if (!updatedCourseIds.has(courseId)) {
         certificate.courseId.issueStatus = "I";
 
-        console.log(certificate);
+        if (
+          certificate.courseId.signatureArray &&
+          certificate.courseId.signatureArray.length === 0
+        ) {
+          certificate.courseId.signatureArray = undefined;
+        }
+        console.log(certificate.courseId);
 
         await certificate.courseId.save({ session });
         updatedCourseIds.add(courseId);
