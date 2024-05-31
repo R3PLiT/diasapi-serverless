@@ -106,6 +106,15 @@ const certificateSchema = new mongoose.Schema(
 export const Certificate = mongoose.model("Certificate", certificateSchema);
 
 // ===== course ======
+const signatureSchema = new Schema(
+  {
+    no: { type: Number },
+    signature: { type: String },
+    signName: { type: String },
+  },
+  { _id: false }
+);
+
 const courseSchema = new mongoose.Schema(
   {
     course: { type: String, required: true },
@@ -121,14 +130,7 @@ const courseSchema = new mongoose.Schema(
     dateOfExpireCert: { type: String },
     signature: { data: Buffer, contentType: String },
     signName: { type: String },
-    signatureArray: [
-      {
-        no: { type: Number },
-        signature: { type: String },
-        signName: { type: String },
-      },
-      { _id: false },
-    ],
+    signatureArray: [signatureSchema],
     // ============ OR =================
     // 2.-------------------------------
     instituteName: { type: String },
