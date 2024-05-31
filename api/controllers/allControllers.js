@@ -1541,6 +1541,7 @@ export const makeCertificatesData = async (req, res, next) => {
           certificate.signatureArray.length === 0
         ) {
           certificate.signatureArray = undefined;
+          console.log("array");
         }
 
         await certificate.courseId.save({ session });
