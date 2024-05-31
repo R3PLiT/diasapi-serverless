@@ -106,7 +106,7 @@ const certificateSchema = new mongoose.Schema(
 export const Certificate = mongoose.model("Certificate", certificateSchema);
 
 // ===== course ======
-const signatureSchema = new Schema(
+const signatureSchema = new mongoose.Schema(
   {
     no: { type: Number },
     signature: { type: String },
