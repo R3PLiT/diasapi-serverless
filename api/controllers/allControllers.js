@@ -473,6 +473,11 @@ export const getInstituteCourses = async (req, res, next) => {
           plainObj.signature.data.toString("base64");
         plainObj.signature = signatureBase64;
       }
+
+      if (plainObj.signatureArray && plainObj.signatureArray.length === 0) {
+        delete plainObj.signatureArray;
+      }
+
       return plainObj;
     });
 
@@ -522,6 +527,11 @@ export const getMyCourses = async (req, res, next) => {
           plainObj.signature.data.toString("base64");
         plainObj.signature = signatureBase64;
       }
+
+      if (plainObj.signatureArray && plainObj.signatureArray.length === 0) {
+        delete plainObj.signatureArray;
+      }
+
       return plainObj;
     });
 
@@ -1471,6 +1481,14 @@ export const makeCertificatesData = async (req, res, next) => {
         courseId,
         instituteId,
       };
+
+      if (
+        certificateData.signatureArray &&
+        certificateData.signatureArray.length === 0
+      ) {
+        delete certificateData.signatureArray;
+      }
+
       // console.log(certificateData);
 
       // if (signature) {
