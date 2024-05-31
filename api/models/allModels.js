@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import {customDate} from "../utils/allUtils.js";
+import { customDate } from "../utils/allUtils.js";
 
 const isValidObjectId = mongoose.Types.ObjectId.isValid;
 
@@ -121,6 +121,13 @@ const courseSchema = new mongoose.Schema(
     dateOfExpireCert: { type: String },
     signature: { data: Buffer, contentType: String },
     signName: { type: String },
+    signatureArray: [
+      {
+        no: { type: Number },
+        signature: { type: String },
+        signName: { type: String },
+      },
+    ],
     // ============ OR =================
     // 2.-------------------------------
     instituteName: { type: String },

@@ -89,16 +89,16 @@ router.post(
 );
 
 // ====================
-router.post(
-  "/certificates/prepare",
-  authenticateRole("issuer"),
-  ctrl.prepareCetificates
-);
-router.post(
-  "/certificates/issue",
-  authenticateRole("issuer"),
-  ctrl.issueCertificates
-);
+// router.post(
+//   "/certificates/prepare",
+//   authenticateRole("issuer"),
+//   ctrl.prepareCetificates
+// );
+// router.post(
+//   "/certificates/issue",
+//   authenticateRole("issuer"),
+//   ctrl.issueCertificates
+// );
 
 // ===== courses =====
 router.get("/courses", authenticateRole("issuer"), ctrl.getInstituteCourses);

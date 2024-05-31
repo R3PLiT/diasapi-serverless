@@ -1219,129 +1219,129 @@ export const verifyCertificate = async (req, res, next) => {
   }
 };
 
-export const prepareCetificates = async (req, res, next) => {
-  try {
-    const { issueBatchId, certificates } = req.body;
+// export const prepareCetificates = async (req, res, next) => {
+//   try {
+//     const { issueBatchId, certificates } = req.body;
 
-    for (let obj of certificates) {
-      if (obj.certificateDriveImgId) {
-        const imgHash = await utls.hashDriveImage(obj.certificateDriveImgId);
-        obj.certificateDriveImgHash = `0x${imgHash}`;
-        if (imgHash === "0") {
-          throw createError(
-            404,
-            `no image (${obj.certificateDriveImgId}) found`
-          );
-        } else {
-          obj.certificateDriveImgHash = `0x${imgHash}`;
-        }
-      }
-      const jsonStr = JSON.stringify(obj);
-      const hash = utls.hashSHA256(jsonStr);
-      obj.certificateJson = jsonStr;
-      obj.certificateHash = `0x${hash}`;
-    }
+//     for (let obj of certificates) {
+//       if (obj.certificateDriveImgId) {
+//         const imgHash = await utls.hashDriveImage(obj.certificateDriveImgId);
+//         obj.certificateDriveImgHash = `0x${imgHash}`;
+//         if (imgHash === "0") {
+//           throw createError(
+//             404,
+//             `no image (${obj.certificateDriveImgId}) found`
+//           );
+//         } else {
+//           obj.certificateDriveImgHash = `0x${imgHash}`;
+//         }
+//       }
+//       const jsonStr = JSON.stringify(obj);
+//       const hash = utls.hashSHA256(jsonStr);
+//       obj.certificateJson = jsonStr;
+//       obj.certificateHash = `0x${hash}`;
+//     }
 
-    const documents = certificates.map((obj) => ({
-      certificateUUID: randomUUID(),
-      recipientName: obj.recipientName,
-      recipientEmail: obj.recipientEmail,
-      courseName: obj.courseName,
-      instituteName: obj.instituteName,
-      certificateId: obj.certificateId,
-      issueDate: obj.issueDate,
-      certificateJson: obj.certificateJson,
-      certificateHash: obj.certificateHash,
-      issuerId: req.jwt.userId,
-      issueBatchId,
-    }));
+//     const documents = certificates.map((obj) => ({
+//       certificateUUID: randomUUID(),
+//       recipientName: obj.recipientName,
+//       recipientEmail: obj.recipientEmail,
+//       courseName: obj.courseName,
+//       instituteName: obj.instituteName,
+//       certificateId: obj.certificateId,
+//       issueDate: obj.issueDate,
+//       certificateJson: obj.certificateJson,
+//       certificateHash: obj.certificateHash,
+//       issuerId: req.jwt.userId,
+//       issueBatchId,
+//     }));
 
-    const records = await utls.insertDocuments(Certificate, documents);
+//     const records = await utls.insertDocuments(Certificate, documents);
 
-    res.json({ message: "Certificates have been prepared", records });
-  } catch (error) {
-    console.error("==== prepareCetificates ====\n", error);
-    const handledError = utls.handleMongooseError(error);
-    if (createError.isHttpError(handledError)) {
-      next(handledError);
-    } else {
-      // next(createError(500, "prepare certificates Error"));
-      next(createError(500));
-    }
-  }
-};
+//     res.json({ message: "Certificates have been prepared", records });
+//   } catch (error) {
+//     console.error("==== prepareCetificates ====\n", error);
+//     const handledError = utls.handleMongooseError(error);
+//     if (createError.isHttpError(handledError)) {
+//       next(handledError);
+//     } else {
+//       // next(createError(500, "prepare certificates Error"));
+//       next(createError(500));
+//     }
+//   }
+// };
 
-export const issueCertificates = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  try {
-    const { issueBatchId } = req.body;
-    const { userId } = req.jwt;
+// export const issueCertificates = async (req, res, next) => {
+//   const session = await mongoose.startSession();
+//   session.startTransaction();
+//   try {
+//     const { issueBatchId } = req.body;
+//     const { userId } = req.jwt;
 
-    const query = {
-      issueBatchId,
-      issuerId: userId,
-      treeRoot: { $exists: false },
-    };
-    const select = "certificateHash -_id";
+//     const query = {
+//       issueBatchId,
+//       issuerId: userId,
+//       treeRoot: { $exists: false },
+//     };
+//     const select = "certificateHash -_id";
 
-    const documents = await Certificate.find(query).select(select);
+//     const documents = await Certificate.find(query).select(select);
 
-    if (documents.length === 0) {
-      // throw createError(404, "no data found");
-      throw createError(404);
-    }
+//     if (documents.length === 0) {
+//       // throw createError(404, "no data found");
+//       throw createError(404);
+//     }
 
-    const certificatesHash = documents.map((obj) => [obj.certificateHash]);
-    const tree = utls.createMerkleTree(certificatesHash, ["bytes32"]);
+//     const certificatesHash = documents.map((obj) => [obj.certificateHash]);
+//     const tree = utls.createMerkleTree(certificatesHash, ["bytes32"]);
 
-    const root = tree.root;
-    const treeDumpData = utls.treeDump(tree);
+//     const root = tree.root;
+//     const treeDumpData = utls.treeDump(tree);
 
-    const document = [{ root, treeDumpData }];
+//     const document = [{ root, treeDumpData }];
 
-    await CertificateTree.create(document, { session });
+//     await CertificateTree.create(document, { session });
 
-    const signatures = utls.getProofAll(tree);
+//     const signatures = utls.getProofAll(tree);
 
-    let count = 0;
-    for (const key in signatures) {
-      const query = { certificateHash: key };
-      const update = {
-        $set: { signature: signatures[key], treeRoot: signatures[key].root },
-      };
+//     let count = 0;
+//     for (const key in signatures) {
+//       const query = { certificateHash: key };
+//       const update = {
+//         $set: { signature: signatures[key], treeRoot: signatures[key].root },
+//       };
 
-      const result = await Certificate.updateOne(query, update, { session });
+//       const result = await Certificate.updateOne(query, update, { session });
 
-      if (result.matchedCount !== result.modifiedCount) {
-        throw createError(500, "update data Error");
-      }
+//       if (result.matchedCount !== result.modifiedCount) {
+//         throw createError(500, "update data Error");
+//       }
 
-      count += result.modifiedCount;
-    }
+//       count += result.modifiedCount;
+//     }
 
-    const transactionHash = await sendContractTransaction("addRoot", root);
-    console.log("transactionHash : ", transactionHash);
-    console.log("root : ", root);
-    console.log("certificates : ", count + "\n");
+//     const transactionHash = await sendContractTransaction("addRoot", root);
+//     console.log("transactionHash : ", transactionHash);
+//     console.log("root : ", root);
+//     console.log("certificates : ", count + "\n");
 
-    await session.commitTransaction();
+//     await session.commitTransaction();
 
-    res.status(201).json({ transactionHash, root, certificates: count });
-  } catch (error) {
-    await session.abortTransaction();
-    console.error("==== issueCertificates ====\n", error);
-    const handledError = utls.handleMongooseError(error);
-    if (createError.isHttpError(handledError)) {
-      next(handledError);
-    } else {
-      // next(createError(500, "issue certificates Error"));
-      next(createError(500));
-    }
-  } finally {
-    session.endSession();
-  }
-};
+//     res.status(201).json({ transactionHash, root, certificates: count });
+//   } catch (error) {
+//     await session.abortTransaction();
+//     console.error("==== issueCertificates ====\n", error);
+//     const handledError = utls.handleMongooseError(error);
+//     if (createError.isHttpError(handledError)) {
+//       next(handledError);
+//     } else {
+//       // next(createError(500, "issue certificates Error"));
+//       next(createError(500));
+//     }
+//   } finally {
+//     session.endSession();
+//   }
+// };
 
 export const sendCertificates = async (req, res, next) => {
   try {
