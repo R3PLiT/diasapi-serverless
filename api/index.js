@@ -8,7 +8,6 @@ import connectToDatabase from "./services/connectMongo.js";
 import { connectEthereum } from "./services/connectEthers.js";
 import allRoutes from "./routes/allRoutes.js";
 import errorHandler from "./middlewares/errorMiddleware.js";
-import { registerFont } from "canvas";
 
 const app = express();
 const port = process.env.PORT || 3030;
@@ -34,9 +33,6 @@ try {
 } catch (error) {
   console.error("Initializing Ethereum error:", error);
 }
-
-registerFont("api/includes/templates/fonts/THSarabun Bold.ttf", { family: "Bold" });
-registerFont("api/includes/templates/fonts/THSarabun.ttf", { family: "Normal" });
 
 // Routes
 app.use("/", allRoutes);

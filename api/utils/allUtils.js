@@ -12,8 +12,7 @@ import buddhistEra from "dayjs/plugin/buddhistEra.js";
 import customParseFormat from "dayjs/plugin/customParseFormat.js";
 import utc from "dayjs/plugin/utc.js";
 import timezone from "dayjs/plugin/timezone.js";
-// import { registerFont, createCanvas, loadImage } from "canvas";
-import { createCanvas, loadImage } from "canvas";
+import { registerFont, createCanvas, loadImage } from "canvas";
 import nd from "unicodedigits";
 
 // ===== mongoose =====
@@ -324,9 +323,8 @@ export const customDate = {
 };
 
 // ===== certimage =====
-// console.log("load fonts");
-// registerFont("api/includes/templates/fonts/THSarabun Bold.ttf", { family: "Bold" });
-// registerFont("api/includes/templates/fonts/THSarabun.ttf", { family: "Normal" });
+registerFont("api/includes/templates/fonts/THSarabun Bold.ttf", { family: "Bold" });
+registerFont("api/includes/templates/fonts/THSarabun.ttf", { family: "Normal" });
 
 export const drawCertificate = async (certificateJson) => {
   try {
