@@ -1446,6 +1446,10 @@ export const makeCertificatesData = async (req, res, next) => {
       .session(session)
       .exec();
 
+    if (certificates.length === 0) {
+      return next(createError(404));
+    }
+
     const documents = [];
     const updatedCourseIds = new Set();
 
