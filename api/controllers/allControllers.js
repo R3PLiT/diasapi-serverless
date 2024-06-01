@@ -1220,7 +1220,7 @@ export const verifyCertificate = async (req, res, next) => {
     //   fs.unlinkSync(certificateFile);
     // }
     if (error.message === "This certificate has been revoked.") {
-      outURL = JSON.stringify({
+      const outURL = JSON.stringify({
         certificate: "revoked",
       });
       res.type("json").send(outURL);
