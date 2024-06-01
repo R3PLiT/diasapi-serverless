@@ -93,10 +93,10 @@ export const sendContractTransaction = async (
       const maxTxFee = ethers.utils.parseEther(maxTransactionFee);
 
       if (estimatedTxFee.gt(ethers.BigNumber.from(maxTxFee))) {
-        console.log(estimatedTxFee.toString());
-        throw new Error(
+        console.log(
           `Estimated transaction fee (${estimatedTxFee.toString()}) exceeds the maximum allowed fee (${maxTxFee})`
         );
+        throw createError(403, "transaction fee exceeds allowed fee");
       }
     }
 
@@ -104,6 +104,7 @@ export const sendContractTransaction = async (
       to: contract.address,
       data: contract.interface.encodeFunctionData(functionName, [...args]),
       gasLimit,
+      gasPrice,
     });
 
     const receipt = await tx.wait();
@@ -114,9 +115,13 @@ export const sendContractTransaction = async (
     return receipt.transactionHash;
   } catch (error) {
     console.error("==== sendContractTransaction ====\n", error);
-    throw createError(
-      error.reason ? 400 : 500,
-      error.reason || "Internal Server Error"
-    );
+    if (createError.isHttpError(error)) {
+      throw error;
+    } else {
+      throw createError(
+        error.reason ? 400 : 500,
+        error.reason || "Internal Server Error"
+      );
+    }
   }
 };

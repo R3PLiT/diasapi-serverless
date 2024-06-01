@@ -1549,7 +1549,7 @@ export const makeCertificatesData = async (req, res, next) => {
         ) {
           certificate.courseId.signatureArray = undefined;
         }
-        console.log(certificate.courseId);
+        // console.log(certificate.courseId);
 
         await certificate.courseId.save({ session });
         updatedCourseIds.add(courseId);
