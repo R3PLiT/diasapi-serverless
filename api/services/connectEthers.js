@@ -87,16 +87,17 @@ export const sendContractTransaction = async (
 
     gasLimit = gasLimit.mul(110).div(100);
     const gasPrice = await signer.getGasPrice();
-    const estimatedTransactionFee = gasLimit.mul(gasPrice);
+    const estimatedTxFee = gasLimit.mul(gasPrice);
 
-    if (
-      maxTransactionFee &&
-      estimatedTransactionFee.gt(ethers.BigNumber.from(maxTransactionFee))
-    ) {
-      console.log(estimatedTransactionFee.toString());
-      throw new Error(
-        `Estimated transaction fee (${estimatedTransactionFee.toString()}) exceeds the maximum allowed fee (${maxTransactionFee})`
-      );
+    if (maxTransactionFee) {
+      const maxTxFee = ethers.utils.parseEther(maxTransactionFee);
+
+      if (estimatedTxFee.gt(ethers.BigNumber.from(maxTxFee))) {
+        console.log(estimatedTxFee.toString());
+        throw new Error(
+          `Estimated transaction fee (${estimatedTxFee.toString()}) exceeds the maximum allowed fee (${maxTxFee})`
+        );
+      }
     }
 
     const tx = await signer.sendTransaction({
