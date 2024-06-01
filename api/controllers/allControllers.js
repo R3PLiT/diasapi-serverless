@@ -181,9 +181,11 @@ export const userDetail = async (req, res, next) => {
 
     const userObj = user.toObject();
     if (userObj.userImage) {
-      const userImage = user.userImage.toObject();
-      userObj.userImage =
-        userImage.contentType + "," + userImage.data.toString("base64");
+      const imageBase64 =
+        userObj.userImage.contentType +
+        "," +
+        userObj.userImage.data.toString("base64");
+      userObj.userImage = imageBase64;
     }
 
     res.json(userObj);
@@ -210,11 +212,11 @@ export const getAllUser = async (req, res, next) => {
     const usersObj = users.map((user) => {
       const plainObj = user.toObject();
       if (plainObj.userImage) {
-        const signatureBase64 =
+        const imageBase64 =
           plainObj.userImage.contentType +
           "," +
           plainObj.userImage.data.toString("base64");
-        plainObj.userImage = signatureBase64;
+        plainObj.userImage = imageBase64;
       }
       return plainObj;
     });
@@ -243,10 +245,12 @@ export const getUserById = async (req, res, next) => {
     }
 
     const userObj = user.toObject();
-    if (user.userImage) {
-      const userImage = user.userImage.toObject();
-      userObj.userImage =
-        userImage.contentType + "," + userImage.data.toString("base64");
+    if (userObj.userImage) {
+      const imageBase64 =
+        userObj.userImage.contentType +
+        "," +
+        userObj.userImage.data.toString("base64");
+      userObj.userImage = imageBase64;
     }
 
     res.json(userObj);
