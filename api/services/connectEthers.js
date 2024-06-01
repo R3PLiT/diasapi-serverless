@@ -71,15 +71,33 @@ export const readContractData = async (functionName, ...args) => {
   }
 };
 
-export const sendContractTransaction = async (functionName, ...args) => {
+export const sendContractTransaction = async (
+  functionName,
+  maxTransactionFee,
+  ...args
+) => {
   try {
     const contract = await getContract();
     const signer = await getSigner();
 
-    const gasLimit = await signer.estimateGas({
+    let gasLimit = await signer.estimateGas({
       to: contract.address,
       data: contract.interface.encodeFunctionData(functionName, [...args]),
     });
+
+    gasLimit = gasLimit.mul(110).div(100);
+    const gasPrice = await signer.getGasPrice();
+    const estimatedTransactionFee = gasLimit.mul(gasPrice);
+
+    if (
+      maxTransactionFee &&
+      estimatedTransactionFee.gt(ethers.BigNumber.from(maxTransactionFee))
+    ) {
+      console.log(estimatedTransactionFee.toString());
+      throw new Error(
+        `Estimated transaction fee (${estimatedTransactionFee.toString()}) exceeds the maximum allowed fee (${maxTransactionFee})`
+      );
+    }
 
     const tx = await signer.sendTransaction({
       to: contract.address,

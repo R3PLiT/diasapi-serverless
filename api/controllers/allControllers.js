@@ -1053,6 +1053,7 @@ export const revokeCertificate = async (req, res, next) => {
   try {
     const { certificateUUID } = req.params;
     const { userId } = req.jwt;
+    const { maxTransactionFee } = req.body;
 
     const queryGraduate = { certificateUUID };
     const update = { certificateRevoked: true };
@@ -1087,7 +1088,11 @@ export const revokeCertificate = async (req, res, next) => {
     }
 
     const leaf = document.certificateHash;
-    const transactionHash = await sendContractTransaction("revokeLeaf", leaf);
+    const transactionHash = await sendContractTransaction(
+      "revokeLeaf",
+      maxTransactionFee,
+      leaf
+    );
     console.log("transactionHash : ", transactionHash);
     console.log("certificateUUID : ", certificateUUID);
     console.log("certificateHash : ", leaf + "\n");
@@ -1400,7 +1405,7 @@ export const makeCertificatesData = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const { courseId } = req.body;
+    const { courseId, maxTransactionFee } = req.body;
     const { userId, role, instituteId } = req.jwt;
 
     if (!(role === "admin" || role === "issuer")) {
@@ -1589,7 +1594,11 @@ export const makeCertificatesData = async (req, res, next) => {
       throw createError(404);
     }
 
-    const transactionHash = await sendContractTransaction("addRoot", root);
+    const transactionHash = await sendContractTransaction(
+      "addRoot",
+      maxTransactionFee,
+      root
+    );
 
     console.log("transactionHash : ", transactionHash);
     console.log("root : ", root);
