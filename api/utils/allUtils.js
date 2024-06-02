@@ -43,12 +43,18 @@ export const handleMongooseError = (error) => {
           const regex = /.*(?=for)/;
           const matches = error.errors[field].message.match(regex);
           if (matches) {
-            customMessage[field] = `${matches[0]} ('${error.errors[field].value}')`;
+            customMessage[
+              field
+            ] = `${matches[0]} ('${error.errors[field].value}')`;
           } else {
-            customMessage[field] = `${error.errors[field].name} ('${error.errors[field].value}')`;
+            customMessage[
+              field
+            ] = `${error.errors[field].name} ('${error.errors[field].value}')`;
           }
         } else {
-          customMessage[field] = `${error.errors[field].message} ('${error.errors[field].value}')`;
+          customMessage[
+            field
+          ] = `${error.errors[field].message} ('${error.errors[field].value}')`;
         }
       }
       return createError(422, "ValidationError", { customMessage });
@@ -192,7 +198,9 @@ export const mailCertificates = async (details) => {
         to: recipientEmail,
         subject: `Your Certificate (ประกาศนียบัตรของคุณ)`,
         html: `
-        <p>เรียน ${recipientName ? recipientName : `${titleName}${firstName} ${lastName}`},</p>
+        <p>เรียน ${
+          recipientName ? recipientName : `${titleName}${firstName} ${lastName}`
+        },</p>
         <p>คุณได้รับประกาศนียบัตร${
           instituteName ? `จาก ${instituteName}` : ""
         } สำหรับหลักสูตร ${courseName}</p>
@@ -317,14 +325,18 @@ export const customDate = {
     } catch (error) {
       console.error("==== isDateValid ====\n", error);
       // throw createError(500, "validate date Error");
-      throw createError(500);
+      throw createError(400);
     }
   },
 };
 
 // ===== certimage =====
-registerFont("api/includes/templates/fonts/THSarabun Bold.ttf", { family: "Bold" });
-registerFont("api/includes/templates/fonts/THSarabun.ttf", { family: "Normal" });
+registerFont("api/includes/templates/fonts/THSarabun Bold.ttf", {
+  family: "Bold",
+});
+registerFont("api/includes/templates/fonts/THSarabun.ttf", {
+  family: "Normal",
+});
 
 export const drawCertificate = async (certificateJson) => {
   try {
@@ -333,13 +345,17 @@ export const drawCertificate = async (certificateJson) => {
       fs.readFileSync(`api/includes/templates/${certificate.layoutId}.json`)
     );
 
-    const imageTemplate = await loadImage(`api/includes/templates/${layout.template}`);
+    const imageTemplate = await loadImage(
+      `api/includes/templates/${layout.template}`
+    );
     const canvas = createCanvas(imageTemplate.width, imageTemplate.height);
     const ctx = canvas.getContext("2d");
     ctx.drawImage(imageTemplate, 0, 0);
 
     for (let i = 0; i < layout.images.length; i++) {
-      const img = await loadImage(`api/includes/templates/${layout.images[i].image}`);
+      const img = await loadImage(
+        `api/includes/templates/${layout.images[i].image}`
+      );
       ctx.drawImage(
         img,
         layout.images[i].x,

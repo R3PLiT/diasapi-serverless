@@ -63,6 +63,7 @@ const certificateSchema = new mongoose.Schema(
       leaf: { type: String },
     },
     certificateRevoked: { type: Boolean, default: false },
+    revokedDate: { type: Date },
     treeRoot: {
       type: String,
       ref: "CertificateTree",

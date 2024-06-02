@@ -62,6 +62,12 @@ router.get("/admins/me", authenticateRole("admin"), ctrl.userDetail);
 // ===== certificates =====
 router.get("/certificates", authenticateRole("issuer"), ctrl.certificatesList);
 
+router.get(
+  "/certificates/count",
+  authenticateRole("admin"),
+  ctrl.countCertificates
+);
+
 router.get("/certificates/:certificateUUID", ctrl.certificateJson);
 router.get("/certificates/:certificateUUID/image", ctrl.certificatePNG);
 

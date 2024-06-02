@@ -642,23 +642,38 @@ export const updateCourseById = async (req, res, next) => {
     const { userId, instituteId } = req.jwt;
     const { _id } = req.params;
     // const { course, dateOfStudyStart, dateOfStudyEnd, dateOfExpireCert, signature } = req.body;
+    const reqUpdate = req.body;
 
-    const update = req.body;
-
-    if (update.signature) {
-      const split = update.signature.split(",");
-      const contentType = split[0];
-      const data = Buffer.from(split[1], "base64");
-      update.signature = { data, contentType };
+    if (
+      reqUpdate.issueStatus &&
+      !(reqUpdate.issueStatus === "R" || reqUpdate.issueStatus === "E")
+    ) {
+      return next(createError(403));
     }
 
-    // update.issueStatus = "P";
+    if (reqUpdate.signature) {
+      const split = reqUpdate.signature.split(",");
+      const contentType = split[0];
+      const data = Buffer.from(split[1], "base64");
+      reqUpdate.signature = { data, contentType };
+    }
+
+    const where = { _id, instituteId };
+    let update = {};
+
+    if (reqUpdate.issueStatus === "E") {
+      where.issueStatus = "I";
+      update.issueStatus = "E";
+    } else {
+      where.issueStatus = { $in: ["P", "R"] };
+      update = reqUpdate;
+    }
     update.updatedBy = userId;
 
-    const result = await Course.findByIdAndUpdate(_id, update).where({
-      instituteId,
-      issueStatus: { $in: ["P", "R"] },
-    });
+    console.log(where);
+    console.log(update);
+
+    const result = await Course.findOneAndUpdate(where, update);
 
     if (!result) {
       return next(createError(404, "no course Found"));
@@ -1072,6 +1087,8 @@ export const revokeCertificate = async (req, res, next) => {
     const query = { certificateUUID, issuerId: userId };
     // const update = { certificateRevoked: true };
     // const options = { session, new: true };
+    // update.revokedDate = new Date(new Date().toISOString());
+    update.revokedDate = new Date();
 
     const document = await Certificate.findOneAndUpdate(query, update, options);
 
@@ -1638,6 +1655,89 @@ export const makeCertificatesData = async (req, res, next) => {
   } finally {
     if (session.inTransaction()) {
       await session.endSession();
+    }
+  }
+};
+
+export const countCertificates = async (req, res, next) => {
+  try {
+    // const { userId, role } = req.jwt;
+    // const {instituteId } = req.params;
+    const { startDate, endDate } = req.query;
+
+    if (
+      !(
+        utls.customDate.isDateValid(startDate, "YYYY-MM-DD") &&
+        utls.customDate.isDateValid(endDate, "YYYY-MM-DD")
+      )
+    ) {
+      throw createError(400);
+    }
+
+    const start = new Date(`${startDate}T00:00:00Z`);
+    const end = new Date(`${endDate}T23:59:59Z`);
+
+    const results = await Certificate.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: start, $lte: end },
+        },
+      },
+      {
+        $group: {
+          _id: "$instituteId",
+          certificates: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          instituteId: "$_id",
+          certificates: 1,
+        },
+      },
+    ]);
+
+    // if (results.length === 0) {
+    //   throw createError(404);
+    // }
+
+    const revokedRecs = await Certificate.aggregate([
+      {
+        $match: {
+          revokedDate: { $gte: start, $lte: end },
+        },
+      },
+      {
+        $group: {
+          _id: "$instituteId",
+          certificates: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          instituteId: "$_id",
+          certificates: 1,
+        },
+      }
+    ]);
+
+    // if (revokedRecs.length === 0) {
+    //   throw createError(404);
+    // }
+
+    const result = { startDate, endDate, issued: results, revoked: revokedRecs};
+
+    res.send(result);
+  } catch (error) {
+    console.error("==== countCertificates ====\n", error);
+    const handledError = utls.handleMongooseError(error);
+    if (createError.isHttpError(handledError)) {
+      next(handledError);
+    } else {
+      // next(createError(500, "listing certificates Error"));
+      next(createError(500));
     }
   }
 };
