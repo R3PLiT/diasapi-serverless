@@ -644,12 +644,12 @@ export const updateCourseById = async (req, res, next) => {
     // const { course, dateOfStudyStart, dateOfStudyEnd, dateOfExpireCert, signature } = req.body;
     const reqUpdate = req.body;
 
-    if (
-      reqUpdate.issueStatus &&
-      !(reqUpdate.issueStatus === "R" || reqUpdate.issueStatus === "E")
-    ) {
-      return next(createError(403));
-    }
+    // if (
+    //   reqUpdate.issueStatus &&
+    //   !(reqUpdate.issueStatus === "R" || reqUpdate.issueStatus === "E")
+    // ) {
+    //   return next(createError(403));
+    // }
 
     if (reqUpdate.signature) {
       const split = reqUpdate.signature.split(",");
@@ -1720,14 +1720,19 @@ export const countCertificates = async (req, res, next) => {
           instituteId: "$_id",
           certificates: 1,
         },
-      }
+      },
     ]);
 
     // if (revokedRecs.length === 0) {
     //   throw createError(404);
     // }
 
-    const result = { startDate, endDate, issued: results, revoked: revokedRecs};
+    const result = {
+      startDate,
+      endDate,
+      issued: results,
+      revoked: revokedRecs,
+    };
 
     res.send(result);
   } catch (error) {
