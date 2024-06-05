@@ -140,6 +140,10 @@ const courseSchema = new mongoose.Schema(
     layoutId: { type: String },
     // ---------------------------------
     issueStatus: { type: String, enum: ["P", "R", "E", "I"], default: "P" },
+    templateId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "CertTemplate",
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -282,3 +286,25 @@ const userSchema = new mongoose.Schema(
 );
 
 export const User = mongoose.model("User", userSchema);
+
+// ===== certificatetemplate ======
+const templateSchema = new mongoose.Schema(
+  {
+    name: { type: String },
+    value: { type: String },
+    type: { type: String },
+    orderNumber: { type: Number },
+    file: { type: String },
+  },
+  { _id: false }
+);
+
+const certTemplateSchema = new mongoose.Schema(
+  {
+    templateArray: [templateSchema],
+  },
+
+  { timestamps: true }
+);
+
+export const CertTemplate = mongoose.model("CertTemplate", certTemplateSchema);

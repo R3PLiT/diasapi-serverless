@@ -201,4 +201,23 @@ router.delete(
   ctrl.deleteUserById
 );
 
+// ===== certificate templates =====
+router.post("/templates", authenticateRole("issuer"), ctrl.addCertTemplate);
+router.get("/templates", ctrl.getCetificateTemplates);
+router.get(
+  "/templates/:_id",
+  authenticateRole("issuer"),
+  ctrl.getCertificateTemplateById
+);
+router.patch(
+  "/templates/:_id",
+  authenticateRole("issuer"),
+  ctrl.updateCertificateTemplateById
+);
+router.delete(
+  "/templates/:_id",
+  authenticateRole("issuer"),
+  ctrl.deleteCertTemplateById
+);
+
 export default router;

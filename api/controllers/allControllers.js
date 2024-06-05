@@ -12,6 +12,7 @@ import {
   Graduate,
   CertificateTree,
   Certificate,
+  CertTemplate,
 } from "../models/allModels.js";
 import * as utls from "../utils/allUtils.js";
 // import {
@@ -1742,6 +1743,134 @@ export const countCertificates = async (req, res, next) => {
       next(handledError);
     } else {
       // next(createError(500, "listing certificates Error"));
+      next(createError(500));
+    }
+  }
+};
+
+// ===== certificate templates =====
+export const addCertTemplate = async (req, res, next) => {
+  try {
+    // const { instituteId } = req.jwt;
+    // const { courseId } = req.params;
+    const document = req.body;
+
+    // if (!courseId || !utls.isValidObjectId(courseId)) {
+    //   return next(createError(400));
+    // }
+
+    // const course = await Course.findById(courseId)
+    //   .where({ instituteId })
+    //   .select("_id -__v,-createdAt -updatedAt");
+
+    // if (!course) {
+    //   return next(createError(404));
+    // }
+
+    const result = await CertTemplate.create(document);
+    res.status(201).json({ message: "Created", _id: result._id });
+  } catch (error) {
+    console.error("==== addCertTemplate ====\n", error);
+    const handledError = utls.handleMongooseError(error);
+    if (createError.isHttpError(handledError)) {
+      next(handledError);
+    } else {
+      next(createError(500));
+    }
+  }
+};
+
+export const getCetificateTemplates = async (req, res, next) => {
+  try {
+    // const { role, instituteId } = req.jwt;
+
+    const results = await CertTemplate.find().select(
+      "-__v -createdAt -updatedAt"
+    );
+
+    if (results.length === 0) {
+      return next(createError(404));
+    }
+
+    res.json(results);
+  } catch (error) {
+    console.error("==== getcertificatetemplates ====\n", error);
+    const handledError = utls.handleMongooseError(error);
+    if (createError.isHttpError(handledError)) {
+      next(handledError);
+    } else {
+      next(createError(500));
+    }
+  }
+};
+
+export const getCertificateTemplateById = async (req, res, next) => {
+  try {
+    // const { instituteId } = req.jwt;
+    const { _id } = req.params;
+
+    const result = await CertTemplate.findById(_id).select(
+      "-__v -createdAt -updatedAt"
+    );
+
+    if (!result) {
+      return next(createError(404));
+    }
+
+    res.json(result);
+  } catch (error) {
+    console.error("==== getCertificateTemplateById ====\n", error);
+    const handledError = utls.handleMongooseError(error);
+    if (createError.isHttpError(handledError)) {
+      next(handledError);
+    } else {
+      next(createError(500));
+    }
+  }
+};
+
+export const deleteCertTemplateById = async (req, res, next) => {
+  try {
+    const { _id } = req.params;
+
+    const result = await CertTemplate.findByIdAndDelete(_id);
+
+    if (!result) {
+      return next(createError(404, "no template Found"));
+    }
+
+    res.json({ message: "template deleted successfully" });
+  } catch (error) {
+    console.error("==== deleteCertTemplateById ====\n", error);
+    const handledError = utls.handleMongooseError(error);
+    if (createError.isHttpError(handledError)) {
+      next(handledError);
+    } else {
+      next(createError(500));
+    }
+  }
+};
+
+export const updateCertificateTemplateById = async (req, res, next) => {
+  try {
+    // const { userId, instituteId } = req.jwt;
+    const { _id } = req.params;
+
+    const update = req.body;
+
+    const result = await CertTemplate.findByIdAndUpdate(_id, update);
+
+    if (!result) {
+      return next(createError(404, "no template Found"));
+    }
+
+    res.json({ message: "Updated" });
+  } catch (error) {
+    console.error("==== updateCertificateTemplateById ====\n", error);
+    const handledError = utls.handleMongooseError(error);
+    if (createError.isHttpError(handledError)) {
+      next(handledError);
+    } else {
       next(createError(500));
     }
   }
