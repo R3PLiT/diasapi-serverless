@@ -176,10 +176,7 @@ const certificateTreeSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const CertificateTree = mongoose.model(
-  "CertificateTree",
-  certificateTreeSchema
-);
+export const CertificateTree = mongoose.model("CertificateTree", certificateTreeSchema);
 
 // ===== graduate ======
 const graduateSchema = new mongoose.Schema(
@@ -274,8 +271,7 @@ const userSchema = new mongoose.Schema(
           }
           return await mongoose.model("Institute").exists({ _id: value });
         },
-        message:
-          "Required only for issuer and must exist in the 'Institute' collection.",
+        message: "Required only for issuer and must exist in the 'Institute' collection.",
       },
     },
     userImage: { data: Buffer, contentType: String },
@@ -292,7 +288,7 @@ const templateSchema = new mongoose.Schema(
   {
     name: { type: String },
     value: { type: String },
-    type: { type: String },
+    type: { type: String, enum: ["input", "label", "image"] },
     orderNumber: { type: Number },
     file: { type: String },
   },
