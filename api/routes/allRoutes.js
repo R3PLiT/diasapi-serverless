@@ -62,11 +62,7 @@ router.get("/admins/me", authenticateRole("admin"), ctrl.userDetail);
 // ===== certificates =====
 router.get("/certificates", authenticateRole("issuer"), ctrl.certificatesList);
 
-router.get(
-  "/certificates/count",
-  authenticateRole("admin"),
-  ctrl.countCertificates
-);
+router.get("/certificates/count", authenticateRole("admin"), ctrl.countCertificates);
 
 router.get("/certificates/:certificateUUID", ctrl.certificateJson);
 router.get("/certificates/:certificateUUID/image", ctrl.certificatePNG);
@@ -77,22 +73,10 @@ router.delete(
   ctrl.revokeCertificate
 );
 
-router.post(
-  "/certificates/verify",
-  upload.single("certificateFile"),
-  ctrl.verifyCertificate
-);
+router.post("/certificates/verify", upload.single("certificateFile"), ctrl.verifyCertificate);
 
-router.post(
-  "/certificates/make",
-  authenticateRole("admin"),
-  ctrl.makeCertificatesData
-);
-router.post(
-  "/certificates/mail",
-  authenticateRole("admin"),
-  ctrl.sendCertificates
-);
+router.post("/certificates/make", authenticateRole("admin"), ctrl.makeCertificatesData);
+router.post("/certificates/mail", authenticateRole("admin"), ctrl.sendCertificates);
 
 // ====================
 // router.post(
@@ -108,33 +92,13 @@ router.post(
 
 // ===== courses =====
 router.get("/courses", authenticateRole("issuer"), ctrl.getInstituteCourses);
-router.get(
-  "/courses/me",
-  authenticateRole("admin", "issuer"),
-  ctrl.getMyCourses
-);
+router.get("/courses/me", authenticateRole("admin", "issuer"), ctrl.getMyCourses);
 router.post("/courses", authenticateRole("issuer"), ctrl.addCourse);
-router.get(
-  "/courses/:_id",
-  authenticateRole("admin", "issuer"),
-  ctrl.getCourseById
-);
-router.patch(
-  "/courses/:_id",
-  authenticateRole("issuer"),
-  ctrl.updateCourseById
-);
-router.delete(
-  "/courses/:_id",
-  authenticateRole("issuer"),
-  ctrl.deleteCourseById
-);
+router.get("/courses/:_id", authenticateRole("admin", "issuer"), ctrl.getCourseById);
+router.patch("/courses/:_id", authenticateRole("issuer"), ctrl.updateCourseById);
+router.delete("/courses/:_id", authenticateRole("issuer"), ctrl.deleteCourseById);
 
-router.get(
-  "/courses/:courseId/graduates/:_id",
-  authenticateRole("issuer"),
-  ctrl.getGraduateById
-);
+router.get("/courses/:courseId/graduates/:_id", authenticateRole("issuer"), ctrl.getGraduateById);
 router.patch(
   "/courses/:courseId/graduates/:_id",
   authenticateRole("issuer"),
@@ -146,16 +110,8 @@ router.delete(
   ctrl.deleteGraduateById
 );
 
-router.post(
-  "/courses/:_id/graduates",
-  authenticateRole("issuer"),
-  ctrl.addGraduates
-);
-router.get(
-  "/courses/:_id/graduates",
-  authenticateRole("admin", "issuer"),
-  ctrl.getGraduates
-);
+router.post("/courses/:_id/graduates", authenticateRole("issuer"), ctrl.addGraduates);
+router.get("/courses/:_id/graduates", authenticateRole("admin", "issuer"), ctrl.getGraduates);
 
 // ===== institutes =====
 router.get("/institutes", ctrl.institutesList);
@@ -168,56 +124,24 @@ router.post("/issuers", authenticateRole("admin"), ctrl.register);
 
 router.get("/issuers/me", authenticateRole("issuer"), ctrl.userDetail);
 
-router.get(
-  "/issuers/me/courses",
-  authenticateRole("issuer"),
-  ctrl.getMyCourses
-);
+router.get("/issuers/me/courses", authenticateRole("issuer"), ctrl.getMyCourses);
 
 // ===== users =====
-router.get(
-  "/users/me",
-  authenticateRole("admin", "issuer", "user"),
-  ctrl.userDetail
-);
-router.get(
-  "/users/me/certificates",
-  authenticateRole("user"),
-  ctrl.certificatesList
-);
+router.get("/users/me", authenticateRole("admin", "issuer", "user"), ctrl.userDetail);
+router.get("/users/me/certificates", authenticateRole("user"), ctrl.certificatesList);
 
 router.post("/users", authenticateRole("admin"), ctrl.register);
 
 router.get("/users", ctrl.getAllUser);
 router.get("/users/:_id", ctrl.getUserById);
-router.patch(
-  "/users/:_id",
-  authenticateRole("admin", "issuer", "user"),
-  ctrl.updateUserById
-);
-router.delete(
-  "/users/:_id",
-  authenticateRole("admin", "issuer", "user"),
-  ctrl.deleteUserById
-);
+router.patch("/users/:_id", authenticateRole("admin", "issuer", "user"), ctrl.updateUserById);
+router.delete("/users/:_id", authenticateRole("admin", "issuer", "user"), ctrl.deleteUserById);
 
 // ===== certificate templates =====
 router.post("/templates", authenticateRole("issuer"), ctrl.addCertTemplate);
 router.get("/templates", ctrl.getCetificateTemplates);
-router.get(
-  "/templates/:_id",
-  authenticateRole("issuer"),
-  ctrl.getCertificateTemplateById
-);
-router.patch(
-  "/templates/:_id",
-  authenticateRole("issuer"),
-  ctrl.updateCertificateTemplateById
-);
-router.delete(
-  "/templates/:_id",
-  authenticateRole("issuer"),
-  ctrl.deleteCertTemplateById
-);
+router.get("/templates/:_id", authenticateRole("issuer"), ctrl.getCertificateTemplateById);
+router.post("/templates/:_id", authenticateRole("issuer"), ctrl.updateCertificateTemplateById);
+router.delete("/templates/:_id", authenticateRole("issuer"), ctrl.deleteCertTemplateById);
 
 export default router;
