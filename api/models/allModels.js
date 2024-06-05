@@ -297,7 +297,7 @@ const templateSchema = new mongoose.Schema(
 
 const certTemplateSchema = new mongoose.Schema(
   {
-    templateArray: [templateSchema],
+    templateValues: [templateSchema],
   },
 
   { timestamps: true }
