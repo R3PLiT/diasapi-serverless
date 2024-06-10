@@ -662,9 +662,17 @@ export const updateCourseById = async (req, res, next) => {
     const where = { _id, instituteId };
     let update = {};
 
-    if (reqUpdate.issueStatus === "E") {
-      where.issueStatus = "I";
-      update.issueStatus = "E";
+    // if (reqUpdate.issueStatus === "E") {
+    //   where.issueStatus = "I";
+    //   update.issueStatus = "E";
+    // } else {
+    //   where.issueStatus = { $in: ["P", "R"] };
+    //   update = reqUpdate;
+    // }
+
+    if (reqUpdate.issueStatus === "E" || reqUpdate.issueStatus === "A") {
+      where.issueStatus = { $in: ["I", "A", "E"] };
+      update.issueStatus = reqUpdate.issueStatus;
     } else {
       where.issueStatus = { $in: ["P", "R"] };
       update = reqUpdate;

@@ -139,7 +139,7 @@ const courseSchema = new mongoose.Schema(
     expireDate: { type: String },
     layoutId: { type: String },
     // ---------------------------------
-    issueStatus: { type: String, enum: ["P", "R", "E", "I"], default: "P" },
+    issueStatus: { type: String, enum: ["P", "R", "A", "E", "I"], default: "P" },
     templateId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "CertTemplate",
